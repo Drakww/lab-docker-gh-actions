@@ -13,7 +13,7 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v3
 
-      # 2️⃣ Login en GHCR
+      # 2️⃣ Login a GHCR
       - name: Login a GHCR
         uses: docker/login-action@v2
         with:
@@ -21,22 +21,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      # 3️⃣ Debug: verificar login
-      - name: Verificar login GHCR
-        run: docker info
-
-      # 4️⃣ Construir imagen con tags latest y SHA del commit
+      # 3️⃣ Construir imagen con owner en minúsculas
       - name: Construir imagen
         run: |
-          docker build -t ghcr.io/drakww/lab-docker-web:latest \
-                       -t ghcr.io/drakww/lab-docker-web:${{ github.sha }} .
+          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/$OWNER_LC/lab-docker-web:latest .
 
-      # 5️⃣ Publicar imagen en GHCR
+      # 4️⃣ Publicar imagen en GHCR
       - name: Publicar imagen
         run: |
-          docker push ghcr.io/drakww/lab-docker-web:latest
-          docker push ghcr.io/drakww/lab-docker-web:${{ github.sha }}
-
-      # 6️⃣ Confirmación de push
-      - name: Confirmar imágenes publicadas
-        run: echo "Imagen publicada con tags latest y SHA: ${{ github.sha }}"
+          OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          docker push ghcr.io/$OWNER_LC/lab-docker-web:latest

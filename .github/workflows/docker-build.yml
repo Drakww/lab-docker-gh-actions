@@ -1,0 +1,26 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v3
+
+      - name: Login a GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Construir imagen
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/lab-docker-web:latest .
+
+      - name: Publicar imagen en GHCR
+        run: docker push ghcr.io/${{ github.repository_owner }}/lab-docker-web:latest

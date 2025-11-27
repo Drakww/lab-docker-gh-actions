@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Construir imagen
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/lab-docker-web:latest .
+        run: docker build -t ghcr.io/${{ github.repository_owner | lower }}/lab-docker-web:latest .
 
       - name: Publicar imagen en GHCR
         run: docker push ghcr.io/${{ github.repository_owner }}/lab-docker-web:latest

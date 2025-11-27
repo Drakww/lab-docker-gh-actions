@@ -1,4 +1,4 @@
-name: Test GHCR Publish
+name: Build and Publish Docker Image
 
 on:
   push:
@@ -7,23 +7,36 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      # 1️⃣ Clonar el repositorio
+      - name: Checkout del repositorio
         uses: actions/checkout@v3
 
-      - name: Login GHCR
+      # 2️⃣ Login en GHCR
+      - name: Login a GHCR
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Verificar login
-        run: |
-          docker info
+      # 3️⃣ Debug: verificar login
+      - name: Verificar login GHCR
+        run: docker info
 
+      # 4️⃣ Construir imagen con tags latest y SHA
       - name: Construir imagen
-        run: docker build -t ghcr.io/drakww/lab-docker-web:latest .
+        run: |
+          docker build -t ghcr.io/drakww/lab-docker-web:latest \
+                       -t ghcr.io/drakww/lab-docker-web:${{ github.sha }} .
 
+      # 5️⃣ Publicar imagen en GHCR
       - name: Publicar imagen
-        run: docker push ghcr.io/drakww/lab-docker-web:latest
+        run: |
+          docker push ghcr.io/drakww/lab-docker-web:latest
+          docker push ghcr.io/drakww/lab-docker-web:${{ github.sha }}
+
+      # 6️⃣ Confirmación de push
+      - name: Confirmar imágenes publicadas
+        run: echo "Imagen publicada con tags latest y SHA: ${{ github.sha }}"

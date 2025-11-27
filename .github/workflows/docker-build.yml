@@ -25,7 +25,7 @@ jobs:
       - name: Verificar login GHCR
         run: docker info
 
-      # 4️⃣ Construir imagen con tags latest y SHA
+      # 4️⃣ Construir imagen con tags latest y SHA del commit
       - name: Construir imagen
         run: |
           docker build -t ghcr.io/drakww/lab-docker-web:latest \
